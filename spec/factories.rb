@@ -164,6 +164,7 @@ Factory.define :project do |p|
   p.association :partner
   p.association :place
   p.association :program
+  p.country { Place.create(:name => "Canada", :place_type_id => 2) }
   p.project_status { ProjectStatus.active || ProjectStatus.create(:name => "Active", :description => "Active Project") }
   p.slug nil
 end
