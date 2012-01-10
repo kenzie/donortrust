@@ -242,8 +242,8 @@ class Dt::ProjectsController < DtApplicationController
     def search_query_prepared
       search_query_prepared = search_query.delete_if{|f,t| t.blank? }
       if search_query_prepared[:total_cost].present?
-        total_costs = search_query_prepared[:total_cost].map{|t| t.split(',') }.flatten.map(&:to_i)
-        search_query_prepared[:total_cost] = (total_costs.min..total_costs.max)
+        total_cost = search_query_prepared[:total_cost].to_s.split(',')
+        search_query_prepared[:total_cost] = (total_cost.min..total_cost.max)
       end
       if search_query_prepared[:search_text].present?
         search_query_prepared.delete(:search_text)
@@ -255,11 +255,16 @@ class Dt::ProjectsController < DtApplicationController
       { facet.to_sym => [ term ] }
     end
 
-    def search_query_with_term_one_option(facet, term)
+    def search_query_with_term_one_option(facet, term, options = {})
+      search_options = {:with_text => false}
+      search_options.merge! options
       facet        = facet.to_sym
       query        = self.search_query
       query[facet] = [term]
       query.delete_if{ |f,t| t.blank? }
+      if search_options[:with_text] && params[:search].present? && params[:search][:search_text].present?
+        query[:search_text] = params[:search][:search_text]
+      end
       query
     end
 

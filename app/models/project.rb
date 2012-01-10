@@ -87,7 +87,7 @@ class Project < ActiveRecord::Base
     has "CAST(total_cost AS UNSIGNED)", :type => :integer, :as => :total_cost
     
     # global conditions
-    where "`projects`.project_status_id IN (2,4) AND `projects`.deleted_at IS NULL AND `partners`.partner_status_id IN (1,3)"
+    where "`projects`.deleted_at IS NULL"
   end
 
   # ultrasphinx indexer configuration
