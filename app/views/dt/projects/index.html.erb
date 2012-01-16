@@ -1,4 +1,4 @@
-<% title(params[:search].blank? ? 'Featured Projects' : nil ) %>
+<% title(search_params_blank? ? 'Featured Projects' : nil ) %>
 
 <div class="clearfix">
 <% @projects.each_with_index do |project, i| %>

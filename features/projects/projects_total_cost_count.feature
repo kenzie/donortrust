@@ -14,6 +14,6 @@ Feature: Projects total cost count
 
   Scenario: Project total cost counts
     Given I am on the projects page
-    Then I should see "$0 - $5,000" within ".project-filter"
-    And I should see "$5,001 - $10,000" within ".project-filter"
-    And I should see "$10,001 - $15,000" within ".project-filter"
+    Then I should see "$0 - $5,000 (1)" within ".project-filter"
+    And I should see "$5,001 - $10,000 (2)" within ".project-filter"
+    And I should see "$10,001 - $15,000 (1)" within ".project-filter"

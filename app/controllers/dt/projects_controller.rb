@@ -2,32 +2,25 @@ class Dt::ProjectsController < DtApplicationController
   include RssParser
   before_filter :project_id_to_session, :only=>[:facebook_login]
   before_filter :require_facebook_login, :only=>[:facebook_login]
-  before_filter :search_query
   helper "dt/groups"
-  helper_method :search_records
+  helper_method :search_params_blank?
   helper_method :search_query
-  helper_method :search_query_only_with_term
-  helper_method :search_query_with_term
-  helper_method :search_query_with_term_one_option
-  helper_method :search_query_without_term
-  helper_method :search_query_without_text
+  helper_method :search_query_prepared
+  helper_method :search_query_mappings
+  helper_method :search_records
   layout "projects"
 
   @monkey_patch_flag = false
 
   def index
-    if params[:search].blank?
+    if search_params_blank?
       @projects = Project.current.paginate(:conditions => { :featured => true }, :page => params[:page], :per_page => 18)
       @projects = Project.current.paginate(:limit => 3, :order => 'RAND()', :page => params[:page], :per_page => 18) if @projects.size == 0
       @search_text = ""
+      @facets = Project.facets
     else
-      @search_text = params[:search][:search_text].present? ? params[:search][:search_text] : ""
-      @projects = Project.search @search_text,
-        :with => search_query_prepared,
-        :page     => params[:page],
-        :per_page => (params[:per_page].blank? ? 18 : params[:per_page].to_i),
-        :order    => (params[:order].blank? ? :created_at : params[:order].to_sym),
-        :populate => true
+      @projects = Project.search(params[:keyword], search_options)
+      @facets = Project.facets(search_options)
     end
     respond_to do |format|
       format.html { render :action => "index", :layout => "project_search"}
@@ -195,14 +188,37 @@ class Dt::ProjectsController < DtApplicationController
 
 
   protected
-    def search_facets
-      %w(sector_ids country_id partner_id total_cost project_status_id)
+
+    def search_params_blank?
+      params[:keyword].blank? && params[:status].blank? && params[:sector].blank? && params[:country].blank? && params[:partner].blank? && params[:cost].blank?
+    end
+
+    def search_query
+      with = {}
+      with.merge!({ :project_status_id => params[:status] }) unless params[:status].blank?
+      with.merge!({ :sector_ids => params[:sector] }) unless params[:sector].blank?
+      with.merge!({ :country_id => params[:country] }) unless params[:country].blank?
+      with.merge!({ :partner_id => params[:partner] }) unless params[:partner].blank?
+      with.merge!({ :total_cost => search_cost_to_range }) unless params[:cost].blank?
+      with
+    end
+
+    def search_query_prepared
+      # TODO filter out blanks
+      query = Hash[search_query.map {|k, v| [search_query_mappings[k], v] }]
+      query[:cost] = search_cost_to_uri(query[:cost]) unless query[:cost].nil?
+      query[:keyword] = params[:keyword] unless params[:keyword].nil?
+      query
+    end
+
+    def search_query_mappings
+      {:project_status_id => :status, :sector_ids => :sector, :country_id => :country, :partner_id => :partner, :total_cost => :cost, :keyword => :keyword}
     end
 
     def search_records
       if @search_records.nil?
         @search_records = {}
-        @search_records[:search_text] = [params[:search][:search_text]] if params[:search][:search_text].present?
+        @search_records[:keyword] = params[:keyword] if params[:keyword].present?
         search_query.each do |facet, terms|
           facet = facet.to_sym
           case facet
@@ -223,76 +239,24 @@ class Dt::ProjectsController < DtApplicationController
       @search_records
     end
 
-    def search_query
-      search_query = params[:search].present? ? params[:search].dup : {}
-      search_facets.each do |term|
-        term = term.to_sym
-        search_query[term] ||= []
-        search_query[term].uniq!
-      end
-      if search_query[:search_text].present?
-        search_query.delete(:search_text)
-      end
-      if !search_query[:project_status_id].present?
-        search_query[:project_status_id] = [ProjectStatus.active.id]
-      end
-      search_query
+    def search_options
+      {
+        :with => search_query,
+        :page     => params[:page],
+        :per_page => (params[:per_page].blank? ? 18 : params[:per_page].to_i),
+        :order    => (params[:order].blank? ? :created_at : params[:order].to_sym),
+        :populate => true
+      }
     end
 
-    def search_query_prepared
-      search_query_prepared = search_query.delete_if{|f,t| t.blank? }
-      if search_query_prepared[:total_cost].present?
-        total_cost = search_query_prepared[:total_cost].to_s.split(',')
-        search_query_prepared[:total_cost] = (total_cost.min..total_cost.max)
-      end
-      if search_query_prepared[:search_text].present?
-        search_query_prepared.delete(:search_text)
-      end
-      search_query_prepared
+    def search_cost_to_range
+      cost = params[:cost].split('-')
+      cost = (cost.min..cost.max)
     end
 
-    def search_query_only_with_term(facet, term)
-      { facet.to_sym => [ term ] }
-    end
-
-    def search_query_with_term_one_option(facet, term, options = {})
-      search_options = {:with_text => false}
-      search_options.merge! options
-      facet        = facet.to_sym
-      query        = self.search_query
-      query[facet] = [term]
-      query.delete_if{ |f,t| t.blank? }
-      if search_options[:with_text] && params[:search].present? && params[:search][:search_text].present?
-        query[:search_text] = params[:search][:search_text]
-      end
-      query
-    end
-
-    def search_query_with_term(facet, term, options = {})
-      search_options = {:with_text => false}
-      search_options.merge! options
-      facet = facet.to_sym
-      query = self.search_query
-      query[facet] << term unless query[facet].include?(term.to_s)
-      query.delete_if{|f,t| t.blank? }
-      if search_options[:with_text] && params[:search].present? && params[:search][:search_text].present?
-        query[:search_text] = params[:search][:search_text]
-      end
-      query
-    end
-
-    def search_query_without_term(facet, term)
-      query = self.search_query
-      query[facet.to_sym].delete(term.to_s)
-      query.delete_if{|f,t| t.blank? }
-      query
-    end
-
-    def search_query_without_text(facet, term)
-      query = self.search_query
-      query.delete(facet)
-      query.delete_if{|f, t| t.blank?}
-      query
+    def search_cost_to_uri(range)
+      cost = range.to_s.split('..')
+      cost = "#{cost.first}-#{cost.last}"
     end
 
     def project_id_to_session

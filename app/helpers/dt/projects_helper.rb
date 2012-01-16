@@ -1,4 +1,23 @@
 module Dt::ProjectsHelper
+
+  def project_search_add(facet, term)
+    facet = :status if facet == :project_status_id
+    facet = :sector if facet == :sector_ids
+    facet = :country if facet == :country_id
+    facet = :partner if facet == :partner_id
+    if facet == :total_cost
+      facet = :cost
+      term = term.join('-')
+    end
+    new_query = search_query_prepared.merge(facet => term)
+    dt_projects_path(new_query)
+  end
+
+  def project_search_remove(facet)
+    new_query = search_query_prepared.delete_if {|key,value| key == search_query_mappings[facet.to_sym] }
+    dt_projects_path(new_query)
+  end
+
   def project_nav
     render :file => 'dt/projects/project_nav'
   end

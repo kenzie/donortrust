@@ -74,20 +74,20 @@ class Project < ActiveRecord::Base
     has :name
     has created_at
     has updated_at
-    has sectors(:id),   :as => :sector_ids
+    has sectors(:id),   :as => :sector_ids, :facet => true
     has sectors(:name), :as => :sector_names
-    has country(:id),   :as => :country_id
+    has country(:id),   :as => :country_id, :facet => true
     has country(:name), :as => :country_name
     has country(:name), :as => :country_name_sort
-    has partner(:id),   :as => :partner_id
+    has partner(:id),   :as => :partner_id, :facet => true
     has partner(:name), :as => :partner_name
     has partner(:name), :as => :partner_name_sort
-    has project_status(:id), :as => :project_status_id
+    has project_status(:id), :as => :project_status_id, :facet => true
     has project_status(:name), :as => :project_status_name
-    has "CAST(total_cost AS UNSIGNED)", :type => :integer, :as => :total_cost
+    has "CAST(total_cost AS UNSIGNED)", :type => :integer, :as => :total_cost, :facet => true
     
     # global conditions
-    where "`projects`.deleted_at IS NULL"
+    where "`projects`.project_status_id IN (2,4) AND `projects`.deleted_at IS NULL AND `partners`.partner_status_id IN (1,3)"
   end
 
   # ultrasphinx indexer configuration
