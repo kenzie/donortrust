@@ -143,6 +143,7 @@ class Dt::ProjectsController < DtApplicationController
     # project_id_to_session: stores the project id in the (surprise) session,
     # require_facebook_login is a rfacebook thing that bounces the user to facebook, gets a session id, and stores it in the rails session, makes the fbsession object available to controllers
   end
+
   def finish_facebook_login
     project_id = session[:project_id]
     session[:project_id] = nil
@@ -185,7 +186,6 @@ class Dt::ProjectsController < DtApplicationController
       }
     end
   end
-
 
   protected
 
