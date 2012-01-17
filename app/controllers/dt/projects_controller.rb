@@ -235,7 +235,7 @@ class Dt::ProjectsController < DtApplicationController
           when :country_id
             records = Place.find(terms)
           when :total_cost
-            records = terms.map{|term| term.split(',') }
+            records = terms
           when :project_status_id
             records = ProjectStatus.find(terms)
           end
@@ -257,12 +257,11 @@ class Dt::ProjectsController < DtApplicationController
 
     def search_cost_to_range
       cost = params[:cost].split('-')
-      cost = (cost.min..cost.max)
+      cost = (cost.first.to_i..cost.last.to_i)
     end
 
     def search_cost_to_uri(range)
-      cost = range.to_s.split('..')
-      cost = "#{cost.first}-#{cost.last}"
+      cost = "#{range.min}-#{range.max}"
     end
 
     def project_id_to_session

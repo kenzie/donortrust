@@ -3,7 +3,7 @@
     <%= link_to record, project_search_remove(facet) %>
   <%- elsif [:sector_ids, :partner_id, :country_id, :project_status_id].include?(facet) -%>
     <%= link_to "#{record.name}", project_search_remove(facet) %>
-  <%- else -%>
-    <%= link_to "#{number_to_currency(record.first, :precision => 0)} - #{number_to_currency(record.last, :precision => 0)}", project_search_remove(facet) %>
+  <%- elsif facet == :total_cost -%>
+    <%= link_to "#{number_to_currency(record.min, :precision => 0)} - #{number_to_currency(record.max, :precision => 0)}", project_search_remove(facet) %>
   <%- end -%>
 </li>
