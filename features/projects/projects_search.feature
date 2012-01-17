@@ -10,13 +10,12 @@ Feature: Projects search
 	| name 				| total_cost	| country		| partner		| sector	|
 	| Small Project 	| 2500			| Turbekistan	| Tag Solutions	| Education	|
 	| Medium Project 1 	| 6000			| Turbekistan	| Tag Solutions	| Education	|
-	| Medium Project 2 	| 8000			| Turbekistan	| Tag Solutions	| Health	|
+	| Medium Project 2 	| 6000			| Turbekistan	| Tag Solutions	| Health	|
 	| Large Project 	| 12000			| Cape Breton	| Tag Solutions	| Health	|
     And the project indexes are processed
 
   Scenario: Project filters
     Given I am on the projects page
-	# Then show me the page
 	Then I should see "Active (4)"
 	And I should see "Health (2)"
 	And I should see "Education (2)"
