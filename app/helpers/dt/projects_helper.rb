@@ -18,6 +18,19 @@ module Dt::ProjectsHelper
     dt_projects_path(new_query)
   end
 
+  # total_cost_range iterates all ranges unless one has already been selected, in which case only the selected range is dispalyed
+  def total_cost_range
+    cost_ranges = [[0, 5000], [5001, 10000], [10001, 15000], [15001, 20000], [20001, 50000], [50001, 100000], [100001, 500000]]
+    if params[:cost].present?
+      cost = params[:cost].split('-')
+      cost_ranges = [[cost.first.to_i,cost.last.to_i]]
+    end
+    cost_ranges.each do |range|
+      cost_count = Project.search_count(:with => search_query.merge(:total_cost => (range.min..range.max)))
+      yield range, cost_count if cost_count > 0
+    end
+  end
+
   def project_nav
     render :file => 'dt/projects/project_nav'
   end

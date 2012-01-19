@@ -37,6 +37,7 @@ Feature: Projects search
     Then I should see 2 projects listed
     And I should see "Medium Project 2"
     And I should not see "Small Project"
+    And I should not see "Education"
 
   Scenario: Location results count
     Given I am on the projects page
@@ -44,6 +45,7 @@ Feature: Projects search
     Then I should see 3 projects listed
     And I should see "Small Project"
     And I should not see "Large Project"
+    And I should not see "Cape Breton"
 
   Scenario: Partner results count
     Given I am on the projects page
@@ -57,3 +59,5 @@ Feature: Projects search
     Then I should see 2 projects listed
     And I should see "Medium Project 1"
     And I should not see "Large Project"
+    And I should not see "$0 - $5,000"
+    And I should not see "$10,001 - $15,000"

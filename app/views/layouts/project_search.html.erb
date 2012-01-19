@@ -39,7 +39,7 @@
         ACTIVE/COMPLETED
         <ul>
 <% @facets[:project_status_id].sort_by{ |k,v| v }.reverse.each do |id,count| %>
-			<li><%= link_to "#{ProjectStatus.find(id).name} (#{count})", project_search_add(:project_status_id, id) %></li>
+      <li><%= link_to "#{ProjectStatus.find(id).name} (#{count})", project_search_add(:project_status_id, id) %></li>
 <%- end -%>
         </ul>
       </div>
@@ -47,7 +47,7 @@
         CAUSE/SECTOR
         <ul>
 <% @facets[:sector_ids].reject{ |k,v| k == 0 }.sort_by{ |k,v| v }.reverse.each do |id,count| %>
-			<li><%= link_to "#{Sector.find(id).name} (#{count})", project_search_add(:sector_ids, id) %></li>
+      <li><%= link_to "#{Sector.find(id).name} (#{count})", project_search_add(:sector_ids, id) %></li>
 <%- end -%>
         </ul>
       </div>
@@ -55,7 +55,7 @@
         LOCATION
         <ul class="limit-height">
 <% @facets[:country_id].sort_by{ |k,v| v }.reverse.each do |id,count| %>
-			<li><%= link_to "#{Place.find(id).name} (#{count})", project_search_add(:country_id, id) %></li>
+      <li><%= link_to "#{Place.find(id).name} (#{count})", project_search_add(:country_id, id) %></li>
 <%- end -%>
         </ul>
       </div>
@@ -63,20 +63,18 @@
         PARTNER
         <ul class="limit-height">
 <% @facets[:partner_id].sort_by{ |k,v| v }.reverse.each do |id,count| %>
-			<li><%= link_to "#{Partner.find(id).name} (#{count})", project_search_add(:partner_id, id) %></li>
+      <li><%= link_to "#{Partner.find(id).name} (#{count})", project_search_add(:partner_id, id) %></li>
 <%- end -%>
         </ul>
       </div>
       <div class="project-filter">
         TOTAL COST
         <ul>
-<% [[0, 5000], [5001, 10000], [10001, 15000], [15001, 20000], [20001, 50000], [50001, 100000], [100001, 500000]].each do |range|
-	cost_count = Project.search_count(:with => search_query.merge(:total_cost => (range.min..range.max)))
-	unless cost_count == 0
-%>
+
+<% total_cost_range do |range, cost_count| %>
             <li><%= link_to "#{number_to_currency(range.first, :precision => 0)} - #{number_to_currency(range.last, :precision => 0)} (#{cost_count})", project_search_add(:total_cost, range) %></li>
-<%-	end -%>
-<% end %>
+<%-  end -%>
+
         </ul>
       </div>
     </aside>
@@ -88,12 +86,12 @@
         <% form_tag dt_projects_url, :method => :get, :id => "project_search_tools" do %>
           Sort by: <%= select_tag :order, options_for_select([["Added", 'created_at'], ["Total Cost", 'total_cost'], ["Country", 'country_name'], ["Partner", 'partner_name']], params[:order]) %> &nbsp; 
           Display: <%= select_tag :per_page, options_for_select([ '18', '36', '54' ], params[:per_page]) %>
-			<input type="hidden" name="keyword" value="<%= params[:keyword] %>">
-			<input type="hidden" name="status" value="<%= params[:status] %>">
-			<input type="hidden" name="sector" value="<%= params[:sector] %>">
-			<input type="hidden" name="country" value="<%= params[:country] %>">
-			<input type="hidden" name="partner" value="<%= params[:partner] %>">
-			<input type="hidden" name="cost" value="<%= params[:cost] %>">
+      <input type="hidden" name="keyword" value="<%= params[:keyword] %>">
+      <input type="hidden" name="status" value="<%= params[:status] %>">
+      <input type="hidden" name="sector" value="<%= params[:sector] %>">
+      <input type="hidden" name="country" value="<%= params[:country] %>">
+      <input type="hidden" name="partner" value="<%= params[:partner] %>">
+      <input type="hidden" name="cost" value="<%= params[:cost] %>">
         <% end %>
         <%#= "#{@projects.total_entries} found" %> 
         <%= will_paginate %>
