@@ -20,7 +20,7 @@ class Dt::ProjectsController < DtApplicationController
       @facets = Project.facets
     else
       @projects = Project.search(params[:keyword], search_options)
-      @facets = Project.facets(search_options)
+      @facets = Project.facets(params[:keyword], search_options)
     end
     respond_to do |format|
       format.html { render :action => "index", :layout => "project_search"}
