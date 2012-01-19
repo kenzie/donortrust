@@ -18,3 +18,7 @@ Given /^the project indexes are processed$/ do
   ThinkingSphinx::Test.index 'project_core', 'project_delta'
   sleep(0.25)
 end
+
+Then /^I should see (\d+) projects listed$/ do |count|
+  page.has_css?(".project-module", :count => count)
+end
