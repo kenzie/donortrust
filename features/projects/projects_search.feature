@@ -7,19 +7,20 @@ Feature: Projects search
   Background: logged in
     Given I am an authenticated user
     And the following projects
-    | name                | total_cost  | country      | partner        | sector      |
-    | Small Project       | 2500        | Turbekistan  | Tag Solutions  | Education   |
-    | Medium Project 1    | 6000        | Turbekistan  | Tag Solutions  | Education   |
-    | Medium Project 2    | 6000        | Turbekistan  | Tag Solutions  | Health      |
-    | Large Project       | 12000       | Cape Breton  | Tag Solutions  | Health      |
+    | name                | status | sectors           | location     | partners       | total_cost  |
+    | Small Project       | active | Education,Health  | Turbekistan  | Tag Solutions  | 2500        |
+    | Medium Project 1    | active | Education         | Turbekistan  | Tag Solutions  | 6000        |
+    | Medium Project 2    | active | Health            | Turbekistan  | Tag Solutions  | 6000        |
+    | Large Project       | active | Health            | Cape Breton  | Tag Solutions  | 12000       |
     And the project indexes are processed
 
   Scenario: Project filters
     Given I am on the projects page
     Then I should see "Active (4)"
-    And I should see "Health (2)"
+    And I should see "Health (3)"
     And I should see "Education (2)"
     And I should see "Turbekistan (3)"
+    And I should see "Cape Breton (1)"
     And I should see "Tag Solutions (4)"
     And I should see "$0 - $5,000 (1)" within ".project-filter"
     And I should see "$5,001 - $10,000 (2)" within ".project-filter"
@@ -33,11 +34,11 @@ Feature: Projects search
 
   Scenario: Sector results count
     Given I am on the projects page
-    And I follow "Health (2)"
+    And I follow "Health (3)"
     Then I should see 2 projects listed
     And I should see "Medium Project 2"
-    And I should not see "Small Project"
-    And I should not see "Education"
+    And I should not see "Medium Project 1"
+    And I should see "Education (1)"
 
   Scenario: Location results count
     Given I am on the projects page
