@@ -68,8 +68,8 @@ class Project < ActiveRecord::Base
     indexes note
     
     indexes partner(:name), :as => :partner
-    indexes country(:name), :as => :country_name
-    indexes sectors(:name), :as => :sector_name
+    indexes country(:name), :as => :country
+    indexes sectors(:name), :as => :sector
     indexes project_status(:name), :as => :project_status
 
     # attributes
