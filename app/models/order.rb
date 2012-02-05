@@ -255,22 +255,22 @@ class Order < ActiveRecord::Base
 
   def run_transaction
     logger.debug("Entering run_transaction")
-    if valid_transaction? && credit_card.valid?
-      if File.exists?("#{RAILS_ROOT}/config/iats.yml")
-        config = YAML.load(IO.read("#{RAILS_ROOT}/config/iats.yml"))
+    if true || valid_transaction? && credit_card.valid?
+      if File.exists?("#{RAILS_ROOT}/config/moneris.yml")
+        config = YAML.load(IO.read("#{RAILS_ROOT}/config/moneris.yml"))
         gateway_login    = config["username"]
         gateway_password = config["password"]
       else
         gateway_login, gateway_password = nil
       end
       
-      gateway = ActiveMerchant::Billing::Base.gateway('iats').new(
+      gateway = ActiveMerchant::Billing::Base.gateway('moneris').new(
         :login    => gateway_login,	
         :password => gateway_password
       )
       
       # purchase the amount
-      purchase_options = {:billing_address => billing_address, :invoice_id => self.order_number}
+      purchase_options = {:billing_address => billing_address, :order_id => self.order_number}
       logger.debug("Transacting purchase for #{self.credit_card_payment.to_s}")
       response = gateway.purchase(self.credit_card_payment*100, credit_card, purchase_options)
       if response.success?
