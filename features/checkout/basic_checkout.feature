@@ -9,6 +9,7 @@ Background:
   And I have added a $10 gift to my cart
   #And that I have removed the optional donation
 
+@moneris_test
 Scenario: Successful checkout with fewest options
   Given I am on my cart page
   When I follow "Checkout"
@@ -40,6 +41,7 @@ Scenario: Successful checkout with fewest options
   And I should see "Thank you for helping to change the world."
   And my order should be complete
 
+@moneris_test
 Scenario: Successful checkout with signup
   Given I am on my cart page
   When I follow "Checkout"

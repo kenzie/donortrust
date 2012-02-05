@@ -254,14 +254,15 @@ class Order < ActiveRecord::Base
   end
 
   def run_transaction
-    logger.debug("Entering run_transaction")
-    if true || valid_transaction? && credit_card.valid?
+    if valid_transaction? && credit_card.valid?
       if File.exists?("#{RAILS_ROOT}/config/moneris.yml")
         config = YAML.load(IO.read("#{RAILS_ROOT}/config/moneris.yml"))
         gateway_login    = config["username"]
         gateway_password = config["password"]
       else
-        gateway_login, gateway_password = nil
+        # try the global login/password for testing
+        gateway_login = $gateway_login
+        gateway_password = $gateway_password
       end
       
       gateway = ActiveMerchant::Billing::Base.gateway('moneris').new(
