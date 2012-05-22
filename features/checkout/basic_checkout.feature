@@ -9,6 +9,7 @@ Background:
   And I have added a $10 gift to my cart
   #And that I have removed the optional donation
 
+@moneris_test
 Scenario: Successful checkout with fewest options
   Given I am on my cart page
   When I follow "Checkout"
@@ -28,8 +29,8 @@ Scenario: Successful checkout with fewest options
   Then I should see "Password"
   And I should see "Password confirmation"
   When I press "next"
-  And I fill in "Credit card number" with "1"
-  And I fill in "Card security number (CVV)" with "989"
+  And I fill in "Credit card number" with "4242424242424242"
+  And I fill in "Card security number (CVV)" with "123"
   And I select "01" from "order_expiry_month"
   And I select "2018" from "order_expiry_year"
   And I fill in "Cardholder name" with "Jonathan Smith"
@@ -40,6 +41,7 @@ Scenario: Successful checkout with fewest options
   And I should see "Thank you for helping to change the world."
   And my order should be complete
 
+@moneris_test
 Scenario: Successful checkout with signup
   Given I am on my cart page
   When I follow "Checkout"
@@ -58,8 +60,8 @@ Scenario: Successful checkout with signup
   And I fill in "order_password_confirmation" with "Secret123"
   And I check "Terms of use"
   When I press "next"
-  And I fill in "Credit card number" with "1"
-  And I fill in "Card security number (CVV)" with "989"
+  And I fill in "Credit card number" with "4242424242424242"
+  And I fill in "Card security number (CVV)" with "123"
   And I select "01" from "order_expiry_month"
   And I select "2018" from "order_expiry_year"
   And I fill in "Cardholder name" with "Jonathan Smith"
