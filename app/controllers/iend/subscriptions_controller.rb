@@ -28,7 +28,7 @@ class Iend::SubscriptionsController < DtApplicationController
           flash[:notice] = "Your subscription has been updated"
           redirect_to iend_subscriptions_path
         else
-          render :action => "edit"
+          render :action => params[:show_action] == "edit_billing" ? "edit_billing" : "edit"
         end
       }
     end
@@ -51,8 +51,7 @@ class Iend::SubscriptionsController < DtApplicationController
 
   protected
     def ssl_required?
-      return true if action_name == "edit_billing"
-      false
+      true
     end
     
 end
